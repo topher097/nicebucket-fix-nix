@@ -31,16 +31,18 @@ fn check_if_debian_or_ubuntu() -> bool {
     if let Ok(file) = File::open("/etc/os-release") {
         let reader = BufReader::new(file);
 
-        for line in reader.lines().flatten() {
+        for line in reader.lines().map_while(Result::ok) {
             if let Some((key, value)) = line.split_once('=') {
                 let value = value.trim().trim_matches('"');
 
                 // We check "ID" (the specific distro) and "ID_LIKE" (what it is based on).
                 // E.g., Linux Mint has ID=linuxmint but ID_LIKE=ubuntu.
-                if key == "ID" || key == "ID_LIKE" {
-                    if value.contains("debian") || value.contains("ubuntu") {
-                        return true;
-                    }
+                let is_id_key = key == "ID" || key == "ID_LIKE";
+                let is_debian_or_ubuntu_value =
+                    value.contains("debian") || value.contains("ubuntu");
+
+                if is_id_key && is_debian_or_ubuntu_value {
+                    return true;
                 }
             }
         }

@@ -5,6 +5,7 @@ use aws_config::Region;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::{Delete, ObjectIdentifier};
 use aws_sdk_s3::{Client, Error};
+use infer;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::io::{Cursor, Write};
@@ -14,7 +15,6 @@ use tokio::io::AsyncReadExt;
 use tokio::task::JoinHandle;
 use zip::write::ZipWriter;
 use zip::CompressionMethod;
-use infer;
 
 type DownloadTaskHandle =
     JoinHandle<Result<(String, Vec<u8>), Box<dyn std::error::Error + Send + Sync>>>;

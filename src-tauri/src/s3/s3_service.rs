@@ -5,7 +5,6 @@ use aws_config::Region;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::{Delete, ObjectIdentifier};
 use aws_sdk_s3::{Client, Error};
-use infer;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::io::{Cursor, Write};

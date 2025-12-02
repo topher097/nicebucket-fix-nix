@@ -2,7 +2,52 @@ mod keyring;
 mod s3;
 
 use specta_typescript::{BigIntExportBehavior, Typescript};
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use tauri_specta::{collect_commands, Builder};
+
+fn should_set_webkit_workaround() -> bool {
+    let is_appimage = std::env::var("APPIMAGE").is_ok();
+
+    if !is_appimage {
+        return false;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let is_debian_based = check_if_debian_or_ubuntu();
+
+        !is_debian_based
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        false
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn check_if_debian_or_ubuntu() -> bool {
+    if let Ok(file) = File::open("/etc/os-release") {
+        let reader = BufReader::new(file);
+
+        for line in reader.lines().flatten() {
+            if let Some((key, value)) = line.split_once('=') {
+                let value = value.trim().trim_matches('"');
+
+                // We check "ID" (the specific distro) and "ID_LIKE" (what it is based on).
+                // E.g., Linux Mint has ID=linuxmint but ID_LIKE=ubuntu.
+                if key == "ID" || key == "ID_LIKE" {
+                    if value.contains("debian") || value.contains("ubuntu") {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    false
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -32,6 +77,11 @@ pub fn run() {
             "../src/bindings.ts",
         )
         .expect("Failed to export typescript bindings");
+
+    // This aims at solving issue when running on non-Debian Linux
+    if should_set_webkit_workaround() {
+        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    }
 
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())

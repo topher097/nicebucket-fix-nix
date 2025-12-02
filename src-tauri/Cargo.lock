@@ -3105,6 +3105,7 @@ version = "0.1.3"
 dependencies = [
  "aws-config",
  "aws-sdk-s3",
+ "infer",
  "serde",
  "serde_json",
  "specta",

@@ -18,6 +18,8 @@ use zip::CompressionMethod;
 type DownloadTaskHandle =
     JoinHandle<Result<(String, Vec<u8>), Box<dyn std::error::Error + Send + Sync>>>;
 
+const DEFAULT_CONTENT_TYPE: &str = "application/octet-stream";
+
 #[derive(Clone)]
 pub struct S3Service {
     client: Client,
@@ -260,12 +262,17 @@ impl S3Service {
                 let mut contents = Vec::new();
                 file.read_to_end(&mut contents).await?;
 
+                let content_type = infer::get(&contents)
+                    .map(|kind| kind.mime_type())
+                    .unwrap_or(DEFAULT_CONTENT_TYPE);
+
                 let body = ByteStream::from(contents);
 
                 client_clone
                     .put_object()
                     .bucket(&bucket_name_clone)
                     .key(key)
+                    .content_type(content_type)
                     .body(body)
                     .send()
                     .await?;

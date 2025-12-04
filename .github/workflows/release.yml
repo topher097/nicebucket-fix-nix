@@ -212,7 +212,8 @@ jobs:
         with:
           tagName: v${{ env.APP_VERSION }}
           releaseName: "v${{ env.APP_VERSION }}"
-          releaseBody: "See the assets to download this version and install.\n\n**macOS users:** After downloading, you may need to remove the app from quarantine by running: `xattr -cr /Applications/nicebucket.app`"
+          # Mention macOS quarantine removal and Wayland preload/GDK_SCALE hints in release notes
+          releaseBody: "See the assets to download this version and install.\n\n**macOS users:** After downloading, you may need to remove the app from quarantine by running: `xattr -cr /Applications/nicebucket.app`\n\n**Wayland users:** On some non-Debian distros, launch with `LD_PRELOAD=/usr/lib/libwayland-client.so GDK_SCALE=1 ./nicebucket.AppImage`."
           releaseDraft: false
           prerelease: false
           appVersion: ${{ env.APP_VERSION }}

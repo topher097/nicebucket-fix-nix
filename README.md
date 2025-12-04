@@ -44,6 +44,14 @@ Until then, you need to run the following command in order to use nicebucket on 
 xattr -d com.apple.quarantine /Applications/nicebucket.app
 ```
 
+#### Linux (Wayland)
+
+Some non-Debian Wayland distributions require preloading the Wayland client library to launch the AppImage. We also had scaling glitches without `GDK_SCALE=1`, so keep it in the command below (adjust the binary name if needed):
+
+```
+LD_PRELOAD=/usr/lib/libwayland-client.so GDK_SCALE=1 ./nicebucket.AppImage
+```
+
 ## Getting Started
 
 1. Launch nicebucket

@@ -18,6 +18,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * AppImage workaround ([#67](https://github.com/nicebucket-org/nicebucket/issues/67)) ([00b3c16](https://github.com/nicebucket-org/nicebucket/commit/00b3c165bfb5d09e56ace27e60940c88b92cfb65)), closes [#39](https://github.com/nicebucket-org/nicebucket/issues/39)
 
+### Notes
+
+* On some non-Debian Wayland distributions, preload the Wayland client library (and optionally also fix scaling issues) when launching the AppImage: `LD_PRELOAD=/usr/lib/libwayland-client.so GDK_SCALE=1 ./nicebucket.AppImage`
+
 ### [0.1.2](https://github.com/nicebucket-org/nicebucket/compare/v0.1.1...v0.1.2) (2025-11-25)
 
 ### [0.1.1](https://github.com/nicebucket-org/nicebucket/compare/v0.1.0...v0.1.1) (2025-11-19)

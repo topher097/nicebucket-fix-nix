@@ -201,16 +201,14 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         # The notarization for MacOS often takes very long, let's monitor this
         timeout-minutes: 360
-        # TODO: Code signing environment variables temporarily disabled
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # APPLE_ID: ${{ secrets.APPLE_ID }}
-          # APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # APPLE_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
-          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          # APPLE_SIGNING_IDENTITY: ${{ env.CERT_ID }}
+          # Apple signing (macOS only)
+          APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.MACOS_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.MACOS_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID }}
         with:
           tagName: v${{ env.APP_VERSION }}
           releaseName: "v${{ env.APP_VERSION }}"

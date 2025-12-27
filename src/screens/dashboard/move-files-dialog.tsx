@@ -128,7 +128,7 @@ export function MoveFilesDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[500px] min-h-[400px] overflow-hidden rounded-md border">
+        <div className="max-h-[500px] min-h-[400px] overflow-hidden rounded-md border [--file-tree-offset:0px]">
           {isPending ? (
             <FileTreeSkeleton />
           ) : isError ? (
@@ -143,9 +143,10 @@ export function MoveFilesDialog({
               {(item: FolderListItem) => {
                 return (
                   <>
-                    <span className="flex shrink-0 items-center truncate">
+                    <span className="w-[var(--file-tree-offset,1rem)] shrink-0" />
+                    <span className="flex grow items-center gap-2 truncate">
                       <Folder className="size-5 text-yellow-600" />
-                      <span className="ml-2">{item.label}</span>
+                      {item.label}
                     </span>
                   </>
                 );

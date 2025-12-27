@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/nicebucket-org/nicebucket/compare/v0.2.4...v0.2.5) (2025-12-26)
+
+
+### Bug Fixes
+
+* preview on page that is not the first in pagination ([#85](https://github.com/nicebucket-org/nicebucket/issues/85)) ([84d7af9](https://github.com/nicebucket-org/nicebucket/commit/84d7af98a389468eb46af2611c6bec49327b2417))
+
 ### [0.2.4](https://github.com/nicebucket-org/nicebucket/compare/v0.2.3...v0.2.4) (2025-12-10)
 
 ### [0.2.3](https://github.com/nicebucket-org/nicebucket/compare/v0.2.2...v0.2.3) (2025-12-04)

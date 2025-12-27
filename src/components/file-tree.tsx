@@ -31,7 +31,6 @@ export function FileTree<T extends FileTreeRow>({
   const [currentPage, setCurrentPage] = useState(1);
 
   const { ref, dimensions } = useDimensions<HTMLDivElement>({
-    // Let's see if this is annoying enough to solve it properly.
     onResize: () => {
       setCurrentPage(1);
     },

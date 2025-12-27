@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/nicebucket-org/nicebucket/compare/v0.2.5...v0.2.6) (2025-12-27)
+
+
+### Bug Fixes
+
+* nested tree pagination ([#86](https://github.com/nicebucket-org/nicebucket/issues/86)) ([d51bd1a](https://github.com/nicebucket-org/nicebucket/commit/d51bd1a56609311b987862c712ff53dcf6b3bfd2))
+
 ### [0.2.5](https://github.com/nicebucket-org/nicebucket/compare/v0.2.4...v0.2.5) (2025-12-26)
 
 

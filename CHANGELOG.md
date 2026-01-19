@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/nicebucket-org/nicebucket/compare/v0.3.0...v0.3.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* versions ([#96](https://github.com/nicebucket-org/nicebucket/issues/96)) ([24f079d](https://github.com/nicebucket-org/nicebucket/commit/24f079d489db2ea191c4c26deb9675214f85ec1f))
+
 ## [0.3.0](https://github.com/nicebucket-org/nicebucket/compare/v0.2.8...v0.3.0) (2026-01-19)
 
 

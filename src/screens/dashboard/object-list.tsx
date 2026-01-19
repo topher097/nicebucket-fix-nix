@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { copyToClipboard } from "@/lib/actions";
 import { useCommands } from "@/lib/use-commands";
-import { formatFileSize, relativeTimeSince } from "@/lib/utils";
+import { cn, formatFileSize, relativeTimeSince } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { basename, extname, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { exists, writeFile } from "@tauri-apps/plugin-fs";
-import { EllipsisVertical, File, Folder } from "lucide-react";
+import { EllipsisVertical, File, Folder, RotateCw } from "lucide-react";
 import { ReactNode, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { CreateFolderButton } from "./create-folder-button";
 import { DeleteObjectsDialog } from "./delete-objects-dialog";
@@ -41,9 +42,14 @@ interface ObjectListItem {
 interface BucketViewProps {
   connection: Connection;
   bucket: BucketInfo;
+  headerPortalRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function ObjectList({ connection, bucket }: BucketViewProps) {
+export function ObjectList({
+  connection,
+  bucket,
+  headerPortalRef,
+}: BucketViewProps) {
   const { commands } = useCommands();
   const {
     prefix,
@@ -76,6 +82,7 @@ export function ObjectList({ connection, bucket }: BucketViewProps) {
   const {
     data: objects,
     isPending,
+    isFetching,
     isError,
     refetch,
   } = useQuery({
@@ -364,244 +371,262 @@ export function ObjectList({ connection, bucket }: BucketViewProps) {
   }
 
   return (
-    <div className="relative flex h-full w-full overflow-hidden">
-      <div className="flex-1 overflow-auto">
-        <FileTree
-          items={objects}
-          onParentDirectoryClick={() => {
-            if (!prefix) {
-              setSelectedBucket(null);
-              return;
-            }
-
-            setPrefix(parentPrefix);
-            setPreviewedObject(null);
-            return;
-          }}
-        >
-          {(item: ObjectListItem) => {
-            const iconMap: Record<FileType, ReactNode> = {
-              folder: <Folder className="size-5 text-yellow-600" />,
-              file: <File className="size-5 text-neutral-700" />,
-            };
-
-            const icon = iconMap[item.type];
-
-            return (
-              <>
-                <span className="flex shrink-0 items-center truncate">
-                  <Checkbox
-                    onClick={(e) => {
-                      e.stopPropagation();
-
-                      // Toggle selection of item
-                      setSelectedObjects((initial) => {
-                        return initial.includes(item.key)
-                          ? initial.filter((k) => k !== item.key)
-                          : [...initial, item.key];
-                      });
-                    }}
-                    checked={selectedObjects.includes(item.key)}
-                    disabled={item.type === "folder"}
-                  />
-                </span>
-
-                <span className="flex grow items-center gap-2 truncate">
-                  {icon} {item.label}
-                </span>
-
-                <span className="min-w-20 text-center">
-                  {item.size ? formatFileSize({ bytes: item.size }) : ""}
-                </span>
-
-                <div className="min-w-40 truncate">
-                  {item.lastModifiedAt &&
-                    relativeTimeSince(item.lastModifiedAt)}
-                </div>
-
-                <div className="flex min-w-12 items-center justify-center truncate">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <div
-                        className="flex h-6 w-12 cursor-pointer items-center justify-center"
-                        tabIndex={-1}
-                      >
-                        <EllipsisVertical aria-label="Open Bucket Actions Menu" />
-                      </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      {item.type === "folder" && (
-                        <>
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              downloadFolder(item.key);
-                            }}
-                          >
-                            Download
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              setFolderToDelete(item.key);
-                              setVisibleConfirmationDialog("deleteFolder");
-                            }}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </>
-                      )}
-
-                      {item.type === "file" && (
-                        <>
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(item.url);
-                              toast.success("URL copied to clipboard");
-                            }}
-                          >
-                            Copy Object Url
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              downloadObjects([item.key]);
-                            }}
-                          >
-                            Download
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              setItemToDelete(item.key);
-                              setVisibleConfirmationDialog("deleteObjects");
-                            }}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </>
-            );
-          }}
-        </FileTree>
-      </div>
-
-      {previewedObject && (
-        <ObjectPreview bucket={bucket} object={previewedObject} />
-      )}
-
-      <div className="border-muted absolute bottom-4 left-4 flex rounded-md border">
-        {hasActiveSelection ? (
-          <>
-            <span className="flex items-center px-4 select-none hover:bg-transparent">
-              {`${String(selectedObjects.length)} item${selectedObjects.length > 1 ? "s" : ""}`}{" "}
-              selected
-            </span>
-
-            <Button
-              variant="ghost"
-              onClick={() => {
-                downloadObjects(selectedObjects);
-              }}
-            >
-              Download
-            </Button>
-
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setVisibleConfirmationDialog("moveObjects");
-              }}
-            >
-              Move
-            </Button>
-
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setVisibleConfirmationDialog("deleteObjects");
-              }}
-            >
-              Delete
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                uploadObjects();
-              }}
-            >
-              Upload
-            </Button>
-
-            <CreateFolderButton
-              objects={objects}
-              onSubmit={(folderName) => {
-                createFolder(folderName);
-              }}
-            />
-          </>
+    <>
+      {headerPortalRef.current &&
+        createPortal(
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground flex h-6 w-6 cursor-pointer items-center justify-center hover:!bg-transparent"
+            onClick={async () => {
+              await refetch();
+            }}
+            aria-label="Refresh"
+          >
+            <RotateCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
+          </Button>,
+          headerPortalRef.current,
         )}
+
+      <div className="relative flex h-full w-full overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          <FileTree
+            items={objects}
+            onParentDirectoryClick={() => {
+              if (!prefix) {
+                setSelectedBucket(null);
+                return;
+              }
+
+              setPrefix(parentPrefix);
+              setPreviewedObject(null);
+              return;
+            }}
+          >
+            {(item: ObjectListItem) => {
+              const iconMap: Record<FileType, ReactNode> = {
+                folder: <Folder className="size-5 text-yellow-600" />,
+                file: <File className="size-5 text-neutral-700" />,
+              };
+
+              const icon = iconMap[item.type];
+
+              return (
+                <>
+                  <span className="flex shrink-0 items-center truncate">
+                    <Checkbox
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        // Toggle selection of item
+                        setSelectedObjects((initial) => {
+                          return initial.includes(item.key)
+                            ? initial.filter((k) => k !== item.key)
+                            : [...initial, item.key];
+                        });
+                      }}
+                      checked={selectedObjects.includes(item.key)}
+                      disabled={item.type === "folder"}
+                    />
+                  </span>
+
+                  <span className="flex grow items-center gap-2 truncate">
+                    {icon} {item.label}
+                  </span>
+
+                  <span className="min-w-20 text-center">
+                    {item.size ? formatFileSize({ bytes: item.size }) : ""}
+                  </span>
+
+                  <div className="min-w-40 truncate">
+                    {item.lastModifiedAt &&
+                      relativeTimeSince(item.lastModifiedAt)}
+                  </div>
+
+                  <div className="flex min-w-12 items-center justify-center truncate">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <div
+                          className="flex h-6 w-12 cursor-pointer items-center justify-center"
+                          tabIndex={-1}
+                        >
+                          <EllipsisVertical aria-label="Open Bucket Actions Menu" />
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        {item.type === "folder" && (
+                          <>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                downloadFolder(item.key);
+                              }}
+                            >
+                              Download
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                setFolderToDelete(item.key);
+                                setVisibleConfirmationDialog("deleteFolder");
+                              }}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
+
+                        {item.type === "file" && (
+                          <>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(item.url);
+                                toast.success("URL copied to clipboard");
+                              }}
+                            >
+                              Copy Object Url
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                downloadObjects([item.key]);
+                              }}
+                            >
+                              Download
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                setItemToDelete(item.key);
+                                setVisibleConfirmationDialog("deleteObjects");
+                              }}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </>
+              );
+            }}
+          </FileTree>
+        </div>
+
+        {previewedObject && (
+          <ObjectPreview bucket={bucket} object={previewedObject} />
+        )}
+
+        <div className="border-muted absolute bottom-4 left-4 flex rounded-md border">
+          {hasActiveSelection ? (
+            <>
+              <span className="flex items-center px-4 select-none hover:bg-transparent">
+                {`${String(selectedObjects.length)} item${selectedObjects.length > 1 ? "s" : ""}`}{" "}
+                selected
+              </span>
+
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  downloadObjects(selectedObjects);
+                }}
+              >
+                Download
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setVisibleConfirmationDialog("moveObjects");
+                }}
+              >
+                Move
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setVisibleConfirmationDialog("deleteObjects");
+                }}
+              >
+                Delete
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  uploadObjects();
+                }}
+              >
+                Upload
+              </Button>
+
+              <CreateFolderButton
+                objects={objects}
+                onSubmit={(folderName) => {
+                  createFolder(folderName);
+                }}
+              />
+            </>
+          )}
+        </div>
+
+        <DeleteObjectsDialog
+          isOpen={visibleConfirmationDialog === "deleteObjects"}
+          onOpenChange={(open) => {
+            setVisibleConfirmationDialog(open ? "deleteObjects" : null);
+            if (!open) {
+              setItemToDelete(null);
+            }
+          }}
+          onConfirm={() => {
+            deleteObjects(itemToDelete ? [itemToDelete] : selectedObjects);
+          }}
+          objectKeys={itemToDelete ? [itemToDelete] : selectedObjects}
+        />
+
+        <DeleteObjectsDialog
+          isOpen={visibleConfirmationDialog === "deleteFolder"}
+          onOpenChange={(open) => {
+            setVisibleConfirmationDialog(open ? "deleteFolder" : null);
+            if (!open) {
+              setFolderToDelete(null);
+            }
+          }}
+          onConfirm={() => {
+            if (folderToDelete) {
+              deleteFolder(folderToDelete);
+            }
+          }}
+          objectKeys={folderToDelete ? [folderToDelete] : []}
+          type="folder"
+        />
+
+        <MoveFilesDialog
+          isOpen={visibleConfirmationDialog === "moveObjects"}
+          onOpenChange={(open) => {
+            setVisibleConfirmationDialog(open ? "moveObjects" : null);
+          }}
+          onConfirm={(destinationPrefix) => {
+            moveObjects(destinationPrefix);
+          }}
+          objectKeys={selectedObjects}
+          connection={connection}
+          bucket={bucket}
+          currentPrefix={prefix}
+        />
       </div>
-
-      <DeleteObjectsDialog
-        isOpen={visibleConfirmationDialog === "deleteObjects"}
-        onOpenChange={(open) => {
-          setVisibleConfirmationDialog(open ? "deleteObjects" : null);
-          if (!open) {
-            setItemToDelete(null);
-          }
-        }}
-        onConfirm={() => {
-          deleteObjects(itemToDelete ? [itemToDelete] : selectedObjects);
-        }}
-        objectKeys={itemToDelete ? [itemToDelete] : selectedObjects}
-      />
-
-      <DeleteObjectsDialog
-        isOpen={visibleConfirmationDialog === "deleteFolder"}
-        onOpenChange={(open) => {
-          setVisibleConfirmationDialog(open ? "deleteFolder" : null);
-          if (!open) {
-            setFolderToDelete(null);
-          }
-        }}
-        onConfirm={() => {
-          if (folderToDelete) {
-            deleteFolder(folderToDelete);
-          }
-        }}
-        objectKeys={folderToDelete ? [folderToDelete] : []}
-        type="folder"
-      />
-
-      <MoveFilesDialog
-        isOpen={visibleConfirmationDialog === "moveObjects"}
-        onOpenChange={(open) => {
-          setVisibleConfirmationDialog(open ? "moveObjects" : null);
-        }}
-        onConfirm={(destinationPrefix) => {
-          moveObjects(destinationPrefix);
-        }}
-        objectKeys={selectedObjects}
-        connection={connection}
-        bucket={bucket}
-        currentPrefix={prefix}
-      />
-    </div>
+    </>
   );
 }

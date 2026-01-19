@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/nicebucket-org/nicebucket/compare/v0.2.8...v0.3.0) (2026-01-19)
+
+
+### Features
+
+* add refresh button to bucket and object lists ([#94](https://github.com/nicebucket-org/nicebucket/issues/94)) ([83ca1ef](https://github.com/nicebucket-org/nicebucket/commit/83ca1eff822e2bbcae78cd2894be036dbe57a775))
+
 ### [0.2.8](https://github.com/nicebucket-org/nicebucket/compare/v0.2.7...v0.2.8) (2026-01-05)
 
 ### [0.2.7](https://github.com/nicebucket-org/nicebucket/compare/v0.2.6...v0.2.7) (2026-01-01)

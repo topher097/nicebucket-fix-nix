@@ -2,7 +2,6 @@
 
 Here's what we're planning to work on next. These are in no particular order and may be changed at any time.
 
-- [ ] Fix macOS code signing for app distribution (waiting for response from Apple)
 - [ ] Add progress indicators for downloads, see https://github.com/nicebucket-org/nicebucket/issues/62 for design suggestion
 - [ ] Add progress indicators for uploads (investigate how that is possible for folders)
 - [ ] Add required permissions for API tokens to credentials screen

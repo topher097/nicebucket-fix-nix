@@ -42,6 +42,31 @@ Some non-Debian Wayland distributions require preloading the Wayland client libr
 LD_PRELOAD=/usr/lib/libwayland-client.so GDK_SCALE=1 ./nicebucket.AppImage
 ```
 
+### Nix
+
+If you use Nix with flakes enabled, you can run nicebucket directly without installing:
+
+```bash
+nix run github:nicebucket-org/nicebucket
+```
+
+Or install it to your system:
+
+```bash
+nix profile install github:nicebucket-org/nicebucket
+```
+
+For development with Nix:
+
+```bash
+# Enter the development shell with all dependencies
+nix develop
+
+# Then run the app
+npm install
+npm run dev
+```
+
 ## Getting Started
 
 1. Launch nicebucket

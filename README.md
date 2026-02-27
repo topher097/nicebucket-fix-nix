@@ -34,22 +34,37 @@ Easily move files between folders.
 
 Download from the [Releases](https://github.com/nicebucket-org/nicebucket/releases) section.
 
-#### Mac OS
-
-We're currently working on adding code signing to our CI/CD. Unfortunately, Apple makes this process very cumbersome.
-Until then, you need to run the following command in order to use nicebucket on Mac:
-
-```
-# Modify the path to the executable if required
-xattr -d com.apple.quarantine /Applications/nicebucket.app
-```
-
 #### Linux (Wayland)
 
 Some non-Debian Wayland distributions require preloading the Wayland client library to launch the AppImage. We also had scaling glitches without `GDK_SCALE=1`, so keep it in the command below (adjust the binary name if needed):
 
 ```
 LD_PRELOAD=/usr/lib/libwayland-client.so GDK_SCALE=1 ./nicebucket.AppImage
+```
+
+### Nix
+
+If you use Nix with flakes enabled, you can run nicebucket directly without installing:
+
+```bash
+nix run github:nicebucket-org/nicebucket
+```
+
+Or install it to your system:
+
+```bash
+nix profile install github:nicebucket-org/nicebucket
+```
+
+For development with Nix:
+
+```bash
+# Enter the development shell with all dependencies
+nix develop
+
+# Then run the app
+npm install
+npm run dev
 ```
 
 ## Getting Started

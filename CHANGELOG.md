@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/nicebucket-org/nicebucket/compare/v0.3.2...v0.3.3) (2026-01-29)
+
+### [0.3.2](https://github.com/nicebucket-org/nicebucket/compare/v0.3.1...v0.3.2) (2026-01-27)
+
+### [0.3.1](https://github.com/nicebucket-org/nicebucket/compare/v0.3.0...v0.3.1) (2026-01-19)
+
+
+### Bug Fixes
+
+* versions ([#96](https://github.com/nicebucket-org/nicebucket/issues/96)) ([24f079d](https://github.com/nicebucket-org/nicebucket/commit/24f079d489db2ea191c4c26deb9675214f85ec1f))
+
+## [0.3.0](https://github.com/nicebucket-org/nicebucket/compare/v0.2.8...v0.3.0) (2026-01-19)
+
+
+### Features
+
+* add refresh button to bucket and object lists ([#94](https://github.com/nicebucket-org/nicebucket/issues/94)) ([83ca1ef](https://github.com/nicebucket-org/nicebucket/commit/83ca1eff822e2bbcae78cd2894be036dbe57a775))
+
+### [0.2.8](https://github.com/nicebucket-org/nicebucket/compare/v0.2.7...v0.2.8) (2026-01-05)
+
+### [0.2.7](https://github.com/nicebucket-org/nicebucket/compare/v0.2.6...v0.2.7) (2026-01-01)
+
+### [0.2.6](https://github.com/nicebucket-org/nicebucket/compare/v0.2.5...v0.2.6) (2025-12-27)
+
+
+### Bug Fixes
+
+* nested tree pagination ([#86](https://github.com/nicebucket-org/nicebucket/issues/86)) ([d51bd1a](https://github.com/nicebucket-org/nicebucket/commit/d51bd1a56609311b987862c712ff53dcf6b3bfd2))
+
+### [0.2.5](https://github.com/nicebucket-org/nicebucket/compare/v0.2.4...v0.2.5) (2025-12-26)
+
+
+### Bug Fixes
+
+* preview on page that is not the first in pagination ([#85](https://github.com/nicebucket-org/nicebucket/issues/85)) ([84d7af9](https://github.com/nicebucket-org/nicebucket/commit/84d7af98a389468eb46af2611c6bec49327b2417))
+
+### [0.2.4](https://github.com/nicebucket-org/nicebucket/compare/v0.2.3...v0.2.4) (2025-12-10)
+
+### [0.2.3](https://github.com/nicebucket-org/nicebucket/compare/v0.2.2...v0.2.3) (2025-12-04)
+
 ### [0.2.2](https://github.com/nicebucket-org/nicebucket/compare/v0.2.1...v0.2.2) (2025-12-04)
 
 ### [0.2.1](https://github.com/nicebucket-org/nicebucket/compare/v0.2.0...v0.2.1) (2025-12-04)

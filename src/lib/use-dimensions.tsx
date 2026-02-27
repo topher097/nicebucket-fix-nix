@@ -10,13 +10,17 @@ export function useDimensions<T extends HTMLElement>(props?: {
 }) {
   const ref = useRef<T>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const previousHeightRef = useRef<number>(0);
 
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
       const _dimensions = entry?.contentRect ?? { width: 0, height: 0 };
       setDimensions(_dimensions);
 
-      props?.onResize(_dimensions);
+      if (previousHeightRef.current !== _dimensions.height) {
+        previousHeightRef.current = _dimensions.height;
+        props?.onResize(_dimensions);
+      }
     });
 
     if (ref.current) {

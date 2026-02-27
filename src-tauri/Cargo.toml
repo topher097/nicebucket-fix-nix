@@ -1,6 +1,6 @@
 [package]
 name = "nicebucket"
-version = "0.2.2"
+version = "0.3.3"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
@@ -18,7 +18,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "^2.9.4", features = [] }
+tauri = { version = "^2.10.2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -29,9 +29,9 @@ tauri-specta = { version = "2.0.0-rc.21", features = ["typescript"] }
 specta-typescript = "0.0.9"
 aws-config = { version = "1.0", features = ["behavior-version-latest"] }
 aws-sdk-s3 = { version = "1.0", features = ["behavior-version-latest"] }
-tokio = { version = "1.48", features = ["full"] }
-uuid = { version = "1.18.1", features = ["v4", "serde"] }
+tokio = { version = "1.49", features = ["full"] }
+uuid = { version = "1.21.0", features = ["v4", "serde"] }
 tauri-plugin-fs = "2"
-tauri-plugin-dialog = "2"
-zip = "6.0.0"
+tauri-plugin-dialog = "2.6"
+zip = "8.1.0"
 infer = "0.19.0"

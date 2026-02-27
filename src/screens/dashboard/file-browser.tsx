@@ -1,10 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useRef } from "react";
 import { BucketList } from "./bucket-list";
 import { ObjectList } from "./object-list";
 import { useDashboardContext } from "./use-dashboard-context";
 
 export function FileBrowser() {
+  const headerPortalRef = useRef<HTMLDivElement | null>(null);
+
   const {
     connection,
     selectedBucket,
@@ -29,8 +32,8 @@ export function FileBrowser() {
 
   return (
     <Card className="m-4 grow overflow-x-hidden p-0">
-      <Card className="flex flex-row items-center border-0 border-b shadow-none">
-        <h2 className="grow">
+      <Card className="flex flex-row items-center gap-2 border-0 border-b shadow-none">
+        <h2 className="flex items-center gap-2">
           <span
             className="cursor-pointer"
             onClick={() => {
@@ -63,7 +66,11 @@ export function FileBrowser() {
               >{` / ${label}`}</span>
             );
           })}
+
+          <div ref={headerPortalRef} />
         </h2>
+
+        <div className="grow" />
 
         <Input
           placeholder="Search..."
@@ -76,9 +83,13 @@ export function FileBrowser() {
 
       {connection &&
         (selectedBucket ? (
-          <ObjectList connection={connection} bucket={selectedBucket} />
+          <ObjectList
+            connection={connection}
+            bucket={selectedBucket}
+            headerPortalRef={headerPortalRef}
+          />
         ) : (
-          <BucketList />
+          <BucketList headerPortalRef={headerPortalRef} />
         ))}
     </Card>
   );

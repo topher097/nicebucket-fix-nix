@@ -31,7 +31,6 @@ export function FileTree<T extends FileTreeRow>({
   const [currentPage, setCurrentPage] = useState(1);
 
   const { ref, dimensions } = useDimensions<HTMLDivElement>({
-    // Let's see if this is annoying enough to solve it properly.
     onResize: () => {
       setCurrentPage(1);
     },
@@ -39,13 +38,18 @@ export function FileTree<T extends FileTreeRow>({
 
   const rowHeight = 48;
   const paginationHeightIncludingGapAndPadding = 52 + 16 + 16;
+  const parentDirectoryRowHeight = onParentDirectoryClick ? rowHeight : 0;
+
   const maximumNumberOfItemsWithoutPagination = Math.floor(
-    dimensions.height / rowHeight,
+    (dimensions.height - parentDirectoryRowHeight) / rowHeight,
   );
   const needsPagination = maximumNumberOfItemsWithoutPagination <= items.length;
 
   const calculatedNumberOfItemsWithPagination = Math.floor(
-    (dimensions.height - paginationHeightIncludingGapAndPadding) / rowHeight,
+    (dimensions.height -
+      paginationHeightIncludingGapAndPadding -
+      parentDirectoryRowHeight) /
+      rowHeight,
   );
   const minimumNumberOfVisibleRows = 1;
   const maximumNumberOfItemsWithPagination = Math.max(
@@ -70,13 +74,14 @@ export function FileTree<T extends FileTreeRow>({
         {onParentDirectoryClick && (
           <li key={".."}>
             <Button
-              className="border-muted h-12 w-full cursor-pointer items-center border-b px-6 py-0"
+              className="border-muted flex h-12 w-full cursor-pointer items-center justify-start gap-6 border-b px-6 py-0"
               variant="ghost"
               onClick={() => {
                 onParentDirectoryClick();
               }}
             >
-              <span className="ml-10 flex items-center gap-2 py-3">
+              <span className="w-[var(--file-tree-offset,1rem)] shrink-0" />
+              <span className="flex grow items-center gap-2 truncate">
                 <Folder className="size-5 text-yellow-600" /> {".."}
               </span>
             </Button>
@@ -127,7 +132,7 @@ export function FileTree<T extends FileTreeRow>({
                 currentPage,
                 currentPage + 1,
               ].filter(
-                (pageNumber) => pageNumber >= 0 && pageNumber <= numberOfPages,
+                (pageNumber) => pageNumber >= 1 && pageNumber <= numberOfPages,
               );
 
               if (!visiblePages.includes(page)) {

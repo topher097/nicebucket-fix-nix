@@ -12,8 +12,8 @@
     "preview": "vite preview",
     "clean": "rm -rf src-tauri/target",
     "tauri": "tauri",
-    "test": "echo todo",
-    "test:frontend": "echo todo",
+    "test": "vitest run",
+    "test:frontend": "vitest",
     "test:e2e": "./scripts/e2e-test.sh",
     "lint": "tsc && eslint .",
     "format:check": "npx prettier . --check",
@@ -47,6 +47,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.1.12",
+    "vitest": "^4.0.18",
     "zod": "^4.3.6"
   },
   "devDependencies": {

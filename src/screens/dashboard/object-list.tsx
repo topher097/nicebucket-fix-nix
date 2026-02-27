@@ -11,9 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { copyToClipboard } from "@/lib/actions";
 import { useCommands } from "@/lib/use-commands";
-import { cn, formatFileSize, relativeTimeSince } from "@/lib/utils";
+import {
+  cn,
+  formatFileSize,
+  getFlatDownloadName,
+  getFolderZipBaseName,
+  relativeTimeSince,
+} from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { basename, extname, join } from "@tauri-apps/api/path";
+import { extname, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { exists, writeFile } from "@tauri-apps/plugin-fs";
 import { EllipsisVertical, File, Folder, RotateCw } from "lucide-react";
@@ -168,7 +174,7 @@ export function ObjectList({
       });
 
       for (const [key, bytes] of response) {
-        const name = await basename(key);
+        const name = getFlatDownloadName(key);
         const extension = await extname(name);
         const nameWithoutExtension = name.substring(
           0,
@@ -176,7 +182,7 @@ export function ObjectList({
         );
 
         let counter = 1;
-        let filePath = await join(folder, key);
+        let filePath = await join(folder, name);
 
         // Retry `filename(n).ext` until there exists an `n`, for which the file does not exist yet
         while (await exists(filePath)) {
@@ -219,7 +225,7 @@ export function ObjectList({
         prefix,
       });
 
-      const nameWithoutExtension = prefix.substring(0, prefix.length - 1);
+      const nameWithoutExtension = getFolderZipBaseName(prefix);
       const extension = "zip";
 
       let counter = 1;

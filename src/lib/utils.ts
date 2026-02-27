@@ -9,7 +9,8 @@ import {
 } from "./constants";
 dayjs.extend(relativeTime);
 
-export const isTauri = !!window.__TAURI_INTERNALS__;
+export const isTauri =
+  typeof window !== "undefined" && !!window.__TAURI_INTERNALS__;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,4 +58,16 @@ export function isTextFile(fileName: string) {
 
 export function formatStorageClass(storageClass: string) {
   return STORAGE_CLASSES[storageClass] ?? null;
+}
+
+export function getFlatDownloadName(key: string): string {
+  const segments = key.split("/").filter(Boolean);
+  const lastSegment = segments[segments.length - 1];
+  return lastSegment ?? key;
+}
+
+export function getFolderZipBaseName(prefix: string): string {
+  const trimmed = prefix.endsWith("/") ? prefix.slice(0, -1) : prefix;
+  const normalized = trimmed.replace(/\//g, "_");
+  return normalized || "download";
 }

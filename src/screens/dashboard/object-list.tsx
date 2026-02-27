@@ -169,7 +169,7 @@ export function ObjectList({ connection, bucket }: BucketViewProps) {
         );
 
         let counter = 1;
-        let filePath = await join(folder, key);
+        let filePath = await join(folder, name);
 
         // Retry `filename(n).ext` until there exists an `n`, for which the file does not exist yet
         while (await exists(filePath)) {
@@ -212,7 +212,9 @@ export function ObjectList({ connection, bucket }: BucketViewProps) {
         prefix,
       });
 
-      const nameWithoutExtension = prefix.substring(0, prefix.length - 1);
+      const nameWithoutExtension = prefix
+        .substring(0, prefix.length - 1)
+        .replace(/\//g, "_");
       const extension = "zip";
 
       let counter = 1;

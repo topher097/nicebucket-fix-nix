@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/nicebucket-org/nicebucket/compare/v0.3.3...v0.4.0) (2026-02-27)
+
+
+### Features
+
+* add support for nix flakes ([#109](https://github.com/nicebucket-org/nicebucket/issues/109)) ([197c13d](https://github.com/nicebucket-org/nicebucket/commit/197c13d23d3232c1a05c475c6ed81190e9ba3526))
+
+
+### Bug Fixes
+
+* download name ([#114](https://github.com/nicebucket-org/nicebucket/issues/114)) ([5914281](https://github.com/nicebucket-org/nicebucket/commit/5914281e11951f3b683bd6c84c9e5b009b6bdb90))
+
 ### [0.3.3](https://github.com/nicebucket-org/nicebucket/compare/v0.3.2...v0.3.3) (2026-01-29)
 
 ### [0.3.2](https://github.com/nicebucket-org/nicebucket/compare/v0.3.1...v0.3.2) (2026-01-27)

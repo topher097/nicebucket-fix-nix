@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, use, useEffect, useState } from "react";
 
 const THEMES = { DARK: "dark", LIGHT: "light", SYSTEM: "system" } as const;
 
@@ -32,17 +32,13 @@ function getCurrentTheme(): Theme {
   return THEMES.SYSTEM;
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(getCurrentTheme());
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-  };
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>(() => getCurrentTheme());
 
   useEffect(() => {
-    const root = document.documentElement;
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
 
+    const root = document.documentElement;
     const isSystemAndPrefersDark =
       theme === THEMES.SYSTEM &&
       window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -56,15 +52,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.classList.remove("dark");
   }, [theme]);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext value={{ theme, setTheme }}>{children}</ThemeContext>;
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
+  const context = use(ThemeContext);
 
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");

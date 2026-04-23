@@ -59,5 +59,5 @@ echo "Seeding Done"
 echo "LocalStack is ready!"
 
 echo "Starting WebdriverIO"
-npm run wdio 
+bun run wdio
 echo "Tests completed!"

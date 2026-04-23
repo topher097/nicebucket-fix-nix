@@ -5,34 +5,40 @@ export interface ElementDimensions {
   height: number;
 }
 
-export function useDimensions<T extends HTMLElement>(props?: {
-  onResize: (dimensions: ElementDimensions) => void;
-}) {
+export function useDimensions<T extends HTMLElement>({
+  onResize,
+}: {
+  onResize?: (dimensions: ElementDimensions) => void;
+} = {}) {
   const ref = useRef<T>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const previousHeightRef = useRef<number>(0);
 
   useEffect(() => {
-    const observer = new ResizeObserver(([entry]) => {
-      const _dimensions = entry?.contentRect ?? { width: 0, height: 0 };
-      setDimensions(_dimensions);
+    const element = ref.current;
 
-      if (previousHeightRef.current !== _dimensions.height) {
-        previousHeightRef.current = _dimensions.height;
-        props?.onResize(_dimensions);
-      }
-    });
-
-    if (ref.current) {
-      observer.observe(ref.current);
+    if (!element) {
+      return;
     }
 
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+    const observer = new ResizeObserver(([entry]) => {
+      const nextDimensions = entry?.contentRect ?? { width: 0, height: 0 };
+      setDimensions(nextDimensions);
+
+      if (previousHeightRef.current === nextDimensions.height) {
+        return;
       }
+
+      previousHeightRef.current = nextDimensions.height;
+      onResize?.(nextDimensions);
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
     };
-  }, []);
+  }, [onResize]);
 
   return { ref, dimensions };
 }

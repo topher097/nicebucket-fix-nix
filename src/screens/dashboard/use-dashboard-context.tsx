@@ -2,7 +2,7 @@ import { BucketInfo, Connection, ObjectInfo } from "@/bindings";
 import { useKeyringState } from "@/lib/keyring-state";
 import { useCommands } from "@/lib/use-commands";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, type ReactNode, use, useState } from "react";
 
 interface DashboardContextOptions {
   connection: Connection | null;
@@ -33,7 +33,7 @@ interface DashboardProviderProps {
 
 export function DashboardProvider({ children }: DashboardProviderProps) {
   const [connection, setConnection] = useState<Connection | null>(null);
-  const [selectedBucket, _setSelectedBucket] = useState<BucketInfo | null>(
+  const [bucketSelection, setBucketSelection] = useState<BucketInfo | null>(
     null,
   );
   const [prefix, setPrefix] = useState<string | null>(null);
@@ -56,14 +56,14 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
    * When changing buckets we always want to display the root contents.
    */
   function setSelectedBucket(bucket: BucketInfo | null) {
-    _setSelectedBucket(bucket);
+    setBucketSelection(bucket);
     setPrefix(null);
   }
 
   const contextValue: DashboardContextOptions = {
     connection,
     setConnection,
-    selectedBucket,
+    selectedBucket: bucketSelection,
     setSelectedBucket,
     prefix,
     setPrefix,
@@ -74,15 +74,11 @@ export function DashboardProvider({ children }: DashboardProviderProps) {
     savedConnectionsLoading,
   };
 
-  return (
-    <DashboardContext.Provider value={contextValue}>
-      {children}
-    </DashboardContext.Provider>
-  );
+  return <DashboardContext value={contextValue}>{children}</DashboardContext>;
 }
 
 export function useDashboardContext() {
-  const context = useContext(DashboardContext);
+  const context = use(DashboardContext);
 
   if (!context) {
     throw new Error(

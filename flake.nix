@@ -32,7 +32,7 @@
 
         nativeBuildInputs = with pkgs; [
           pkg-config
-          nodejs_20
+          bun
           cargo
           rustc
           rust.packages.stable.rustPlatform.cargoSetupHook
@@ -58,10 +58,10 @@
           # Build the frontend before building the Rust backend
           preBuild = ''
             # Install frontend dependencies
-            npm ci --cache .npm-cache
+            bun install --frozen-lockfile --cache-dir .bun-cache
 
             # Build the frontend
-            npm run build
+            bun run build
           '';
 
           # Tauri needs these environment variables during build
@@ -112,14 +112,13 @@
 
           shellHook = ''
             echo "nicebucket development environment"
-            echo "Run 'npm install' to install frontend dependencies"
-            echo "Run 'npm run dev' to start the development server"
+            echo "Run 'bun install' to install frontend dependencies"
+            echo "Run 'bun run tauri dev' to start the app in development mode"
             echo ""
             echo "Available tools:"
             echo "  - cargo $(cargo --version | cut -d' ' -f2)"
             echo "  - rustc $(rustc --version | cut -d' ' -f2)"
-            echo "  - node $(node --version)"
-            echo "  - npm $(npm --version)"
+            echo "  - bun $(bun --version)"
           '';
 
           # Environment variables for development

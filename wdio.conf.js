@@ -42,7 +42,7 @@ export const config = {
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
   onPrepare: () => {
     console.log("Building Tauri application for e2e tests...");
-    const result = spawnSync("npm", ["run", "build:e2e"], {
+    const result = spawnSync("bun", ["run", "build:e2e"], {
       cwd: __dirname,
       stdio: "inherit",
       shell: true,

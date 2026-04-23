@@ -63,8 +63,8 @@ For development with Nix:
 nix develop
 
 # Then run the app
-npm install
-npm run dev
+bun install
+bun run tauri dev
 ```
 
 ## Getting Started
@@ -82,8 +82,7 @@ Want to contribute or run nicebucket locally? Here's what you need:
 ### Prerequisites
 
 - [Rust](https://rustup.rs/)
-- [Node.js](https://nodejs.org/) (20+)
-- [Tauri CLI](https://v2.tauri.app/reference/cli/)
+- [Bun](https://bun.sh/) (1.2+)
 
 ### Setup
 
@@ -92,14 +91,14 @@ Setup is quite simple: clone the repository, install dependencies and run the ap
 ```bash
 git clone https://github.com/nicebucket-org/nicebucket.git
 cd nicebucket
-npm install
-npm run dev
+bun install
+bun run tauri dev
 ```
 
 ## Tech Stack
 
-- **Frontend**: React + TypeScript + Tailwind CSS
-- **Backend**: Rust + Tauri
+- **Frontend**: Bun, Vite, React, TypeScript, Tailwind CSS
+- **Backend**: Rust, Tauri
 - **AWS Integration**: Rust AWS SDK
 - **UI Components**: shadcn/ui
 
@@ -119,6 +118,3 @@ Want to see what's coming next? Check out our [ROADMAP.md](ROADMAP.md) to see wh
 
 We share our code freely and want to keep it that way. That's why nicebucket is licensed under GPLv3 - see [LICENSE.md](LICENSE.md) for details.
 
----
-
-Built with ❤️ using Tauri, React and Tailwind.

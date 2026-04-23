@@ -12,6 +12,7 @@ This project is still pretty early stage and we're figuring out where we want to
 
 - All CI checks need to pass (linting, formatting, tests, builds)
 - Follow the existing code style
+- Use Bun for JavaScript and TypeScript tooling (`bun install`, `bun run lint`, `bun run test`, etc.)
 - Make sure you can explain your code in case we have questions
 
 ### AI-Generated Code

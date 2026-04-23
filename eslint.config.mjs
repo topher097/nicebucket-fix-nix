@@ -1,3 +1,4 @@
+import eslintReact from "@eslint-react/eslint-plugin";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
@@ -26,6 +27,7 @@ export default defineConfig(
   },
   {
     files: ["src/**/*.{tsx,jsx}"],
+    extends: [eslintReact.configs["recommended-typescript"]],
     rules: {
       "@typescript-eslint/no-misused-promises": [
         "error",

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "release": "standard-version && git push --follow-tags origin HEAD",
+    "release": "bash scripts/release.sh",
     "build:prod": "NO_STRIP=1 tauri build",
     "build:e2e": "NO_STRIP=1 tauri build --debug --no-bundle",
     "preview": "vite preview",
@@ -19,7 +19,8 @@
     "lint": "tsc && eslint .",
     "format:check": "prettier . --check",
     "format": "prettier . --write",
-    "wdio": "wdio run wdio.conf.js"
+    "wdio": "wdio run wdio.conf.js",
+    "postinstall": "bun2nix -o bun.nix"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -74,7 +75,6 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.59.0",
     "vite": "^8.0.10",
-    "wdio-wait-for": "^3.1.1",
     "webdriverio": "^9.19.2"
   }
 }

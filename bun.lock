@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "nicebucket",
@@ -56,7 +57,6 @@
         "typescript": "~6.0.3",
         "typescript-eslint": "^8.59.0",
         "vite": "^8.0.10",
-        "wdio-wait-for": "^3.1.1",
         "webdriverio": "^9.19.2",
       },
     },
@@ -1577,8 +1577,6 @@
     "wait-port": ["wait-port@1.1.0", "", { "dependencies": { "chalk": "^4.1.2", "commander": "^9.3.0", "debug": "^4.3.4" }, "bin": "bin/wait-port.js" }, "sha512-3e04qkoN3LxTMLakdqeWth8nih8usyg+sf1Bgdf9wwUkp05iuK1eSY/QpLvscT/+F/gA89+LpUmmgBtesbqI2Q=="],
 
     "wcwidth": ["wcwidth@1.0.1", "", { "dependencies": { "defaults": "^1.0.3" } }, "sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg=="],
-
-    "wdio-wait-for": ["wdio-wait-for@3.1.1", "", {}, "sha512-Ogw8907/JbjFe+aIfKYdlildDxCpU4emhwhqo4hCVZ9pjcJj6/fVb0lxmOjAMfRU30vXdB6o7ZY1rb65PFJzBw=="],
 
     "webdriver": ["webdriver@9.27.0", "", { "dependencies": { "@types/node": "^20.1.0", "@types/ws": "^8.5.3", "@wdio/config": "9.27.0", "@wdio/logger": "9.18.0", "@wdio/protocols": "9.27.0", "@wdio/types": "9.27.0", "@wdio/utils": "9.27.0", "deepmerge-ts": "^7.0.3", "https-proxy-agent": "^7.0.6", "undici": "^6.21.3", "ws": "^8.8.0" } }, "sha512-w07ThZND48SIr0b4S7eFougYUyclmoUwdmju8yXvEJiXYjDjeYUpl8wZrYPEYRBylxpSx+sBHfEUBrPQkcTTRQ=="],
 

@@ -1,90 +1,103 @@
 {
   description = "nicebucket - A fast, private, open-source S3 GUI built with Tauri";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://cache.nixos.org"
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    bun2nix = {
+      url = "github:nix-community/bun2nix/2.0.8";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, bun2nix }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
+          overlays = [ bun2nix.overlays.default ];
         };
 
-        # Platform-specific dependencies  
-        buildInputs = with pkgs; [
-          openssl
-          glib
-        ] ++ lib.optionals stdenv.isLinux [
-          # Linux-specific dependencies
-          webkitgtk_4_1
-          gtk3
-          libsoup_3
-          glib-networking
-          libayatana-appindicator
-        ] ++ lib.optionals stdenv.isDarwin [
-          # macOS-specific dependencies
-          libiconv
-        ];
-
-        nativeBuildInputs = with pkgs; [
-          pkg-config
-          bun
-          cargo
-          rustc
-          rust.packages.stable.rustPlatform.cargoSetupHook
-        ] ++ lib.optionals stdenv.isLinux [
-          wrapGAppsHook3
-        ];
-
+        cargoToml = builtins.fromTOML (builtins.readFile ./src-tauri/Cargo.toml);
       in
-      {
+      rec {
         packages.default = pkgs.rustPlatform.buildRustPackage rec {
-          pname = "nicebucket";
-          version = "0.3.3";
+          pname = cargoToml.package.name;
+          version = cargoToml.package.version;
 
-          src = ./.;
+          src = self;
 
-          # Hash of the Cargo dependencies
-          cargoHash = "sha256-VxvjMgn2fzuOAecTVdM7nLxUEzSxX5ONaDzX9k3+j54=";
-          
           cargoRoot = "src-tauri";
 
-          inherit buildInputs nativeBuildInputs;
+          cargoLock = {
+            lockFile = ./src-tauri/Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
 
-          # Build the frontend before building the Rust backend
+          postPatch = ''
+            ${pkgs.jq}/bin/jq 'del(.scripts.postinstall)' package.json > $TMPDIR/package.json
+            cp $TMPDIR/package.json package.json
+          '';
+
+          bunDeps = pkgs.bun2nix.fetchBunDeps {
+            bunNix = ./.nix/bun.nix;
+          };
+
+          buildInputs = with pkgs; [
+            openssl
+            glib
+            webkitgtk_4_1
+            gtk3
+            libsoup_3
+            glib-networking
+            libayatana-appindicator
+            libx11
+          ];
+
+          nativeBuildInputs = with pkgs; [
+            pkg-config
+            cargo-tauri.hook
+            wrapGAppsHook3
+            pkgs.bun2nix.hook
+            jq
+            rustPlatform.bindgenHook
+          ];
+
+          doCheck = false;
+
           preBuild = ''
-            # Install frontend dependencies
-            bun install --frozen-lockfile --cache-dir .bun-cache
-
-            # Build the frontend
+            export HOME=$TMPDIR
             bun run build
           '';
 
-          # Tauri needs these environment variables during build
-          OPENSSL_NO_VENDOR = 1;
-
           installPhase = ''
             runHook preInstall
-
+            mkdir -p $out
+            cd src-tauri
+            mv target/${pkgs.stdenv.hostPlatform.rust.rustcTarget}/release/bundle/deb/*/data/usr/* $out/ 2>/dev/null || true
+            cd ..
             mkdir -p $out/bin
-            
-            # Install the binary
-            install -Dm755 target/release/nicebucket $out/bin/nicebucket
-
+            find src-tauri/target -name nicebucket -type f -executable -not -path "*/deps/*" -not -path "*/bundle/*" -exec install -Dm755 {} $out/bin/nicebucket \;
             runHook postInstall
           '';
 
-          # Linux-specific post-install for desktop integration
-          postInstall = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-            # Install desktop file if it exists
-            if [ -d "src-tauri/icons" ]; then
+          postInstall = ''
+            if [ -d "$out/src-tauri/icons" ]; then
               mkdir -p $out/share/icons/hicolor/256x256/apps
-              if [ -f "src-tauri/icons/icon.png" ]; then
-                cp src-tauri/icons/icon.png $out/share/icons/hicolor/256x256/apps/nicebucket.png
+              if [ -f "$out/src-tauri/icons/icon.png" ]; then
+                cp $out/src-tauri/icons/icon.png $out/share/icons/hicolor/256x256/apps/nicebucket.png
               fi
             fi
           '';
@@ -94,40 +107,37 @@
             homepage = "https://github.com/nicebucket-org/nicebucket";
             license = licenses.gpl3Only;
             maintainers = [ ];
-            platforms = platforms.linux ++ platforms.darwin;
+            platforms = platforms.linux;
             mainProgram = "nicebucket";
           };
         };
 
-        # Development shell with all required dependencies
         devShells.default = pkgs.mkShell {
-          inherit buildInputs;
-          
-          nativeBuildInputs = nativeBuildInputs ++ (with pkgs; [
-            # Additional dev tools
+          buildInputs = with pkgs; [
+            bun
+            nodejs
+          ];
+
+          nativeBuildInputs = with pkgs; [
+            pkg-config
+            cargo
+            rustc
             rustfmt
             clippy
             rust-analyzer
-          ]);
+            cargo-tauri
+            pkgs.bun2nix
+          ];
 
           shellHook = ''
             echo "nicebucket development environment"
             echo "Run 'bun install' to install frontend dependencies"
             echo "Run 'bun run tauri dev' to start the app in development mode"
-            echo ""
-            echo "Available tools:"
-            echo "  - cargo $(cargo --version | cut -d' ' -f2)"
-            echo "  - rustc $(rustc --version | cut -d' ' -f2)"
-            echo "  - bun $(bun --version)"
           '';
 
-          # Environment variables for development
           RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
           OPENSSL_NO_VENDOR = 1;
         };
-
-        # Allow building with 'nix build .#nicebucket'
-        packages.nicebucket = self.packages.${system}.default;
       }
     );
 }
